@@ -1,19 +1,17 @@
 {
   "name": "@codebuff/sdk",
   "private": false,
-  "access": "public",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Official SDK for Codebuff — AI coding agent & framework",
   "license": "Apache-2.0",
-  "type": "commonjs",
-  "main": "./dist/index.js",
+  "type": "module",
+  "main": "./dist/index.cjs",
   "types": "./dist/index.d.ts",
-  "typings": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "require": "./dist/index.js",
-      "default": "./dist/index.js"
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
     },
     "./package.json": "./package.json"
   },
@@ -24,14 +22,19 @@
     "CHANGELOG.md"
   ],
   "scripts": {
-    "build": "bun run build.ts",
-    "build:verify": "bun run build && bun run smoke-test && bun run smoke-test:dist",
-    "smoke-test": "bun run smoke-test.ts",
+    "build": "bun run scripts/build.ts",
+    "build:types": "tsc -p tsconfig.build.json",
+    "build:verify": "bun run build && bun run smoke-test:dist && bun run test:cjs && bun run test:esm && bun run test:ripgrep",
+    "test:typecheck-strict": "tsc --noEmit --strict dist/index.d.ts",
     "smoke-test:dist": "bun run smoke-test-dist.ts",
+    "test:cjs": "cd test/cjs-compatibility && npm install --silent && npm run test:all",
+    "test:esm": "cd test/esm-compatibility && npm install --silent && npm run test:all",
+    "test:ripgrep": "cd test/ripgrep-bundling && npm install --silent && npm run test:all",
     "clean": "rm -rf dist",
     "prepare-dist": "bun run scripts/publish.ts --dry-run",
     "publish-sdk": "bun run scripts/publish.ts --public",
     "publish-dry-run": "bun run build:verify && bun run scripts/publish.ts --dry-run",
+    "fetch-ripgrep": "bun scripts/fetch-ripgrep.ts",
     "prepack": "bun run build",
     "typecheck": "tsc --noEmit -p .",
     "test": "bun test"
@@ -57,17 +60,20 @@
     "url": "https://github.com/CodebuffAI/codebuff/issues"
   },
   "dependencies": {
-    "@vscode/ripgrep": "1.15.14",
     "@vscode/tree-sitter-wasm": "0.1.4",
     "ai": "^5.0.0",
     "diff": "8.0.2",
     "web-tree-sitter": "0.25.6",
+    "ws": "^8.18.0",
     "zod": "^4.0.0"
   },
   "devDependencies": {
     "@types/bun": "^1.2.11",
     "@types/diff": "8.0.0",
-    "@types/node": "22"
+    "@types/node": "22",
+    "adm-zip": "^0.5.12",
+    "dts-bundle-generator": "^9.5.1",
+    "node-fetch": "^3.3.2"
   },
   "author": ""
 }

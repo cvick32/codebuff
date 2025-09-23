@@ -36,7 +36,7 @@ export type ToolCallError = {
 } & Omit<ToolCallPart, 'type'>
 
 export async function processStreamWithTools(options: {
-  stream: AsyncGenerator<StreamChunk>
+  stream: AsyncGenerator<StreamChunk, string | null>
   ws: WebSocket
   agentStepId: string
   clientSessionId: string
@@ -238,7 +238,14 @@ export async function processStreamWithTools(options: {
   )
 
   let reasoning = false
-  for await (const chunk of streamWithTags) {
+  let messageId: string | null = null
+  while (true) {
+    const { value: chunk, done } = await streamWithTags.next()
+    if (done) {
+      messageId = chunk
+      break
+    }
+
     if (chunk.type === 'reasoning') {
       if (!reasoning) {
         reasoning = true
@@ -278,5 +285,6 @@ export async function processStreamWithTools(options: {
     state,
     fullResponse: fullResponseChunks.join(''),
     fullResponseChunks,
+    messageId,
   }
 }

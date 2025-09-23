@@ -6,8 +6,10 @@ import { unstable_cache } from 'next/cache'
 
 import { logger } from '@/util/logger'
 
-// Cache for 60 seconds with stale-while-revalidate
-export const revalidate = 60
+// Enable static generation for API route
+export const revalidate = 600 // Cache for 10 minutes
+export const dynamic = 'force-static' // Force static generation
+export const fetchCache = 'force-cache' // Use cached data when possible
 
 // Cached function for expensive agent aggregations
 const getCachedAgents = unstable_cache(
@@ -251,7 +253,7 @@ const getCachedAgents = unstable_cache(
   },
   ['agents-data'],
   {
-    revalidate: 60,
+    revalidate,
     tags: ['agents'],
   }
 )
@@ -262,11 +264,16 @@ export async function GET() {
 
     const response = NextResponse.json(result)
 
-    // Add cache headers for CDN and browser caching
+    // Add optimized cache headers for better performance
     response.headers.set(
       'Cache-Control',
-      'public, max-age=60, s-maxage=60, stale-while-revalidate=300'
+      'public, max-age=300, s-maxage=600, stale-while-revalidate=3600'
     )
+
+    // Add compression and optimization headers
+    response.headers.set('Vary', 'Accept-Encoding')
+    response.headers.set('X-Content-Type-Options', 'nosniff')
+    response.headers.set('Content-Type', 'application/json; charset=utf-8')
 
     return response
   } catch (error) {

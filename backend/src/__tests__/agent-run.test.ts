@@ -327,6 +327,7 @@ describe('Agent Run Database Functions', () => {
         agentRunId: 'run-123',
         stepNumber: 2,
         startTime,
+        messageId: null,
       })
 
       expect(mockValues).toHaveBeenCalledWith({
@@ -336,7 +337,7 @@ describe('Agent Run Database Functions', () => {
         status: 'completed', // Default status
         credits: undefined,
         child_run_ids: undefined,
-        message_id: undefined,
+        message_id: null,
         error_message: undefined,
         created_at: startTime,
         completed_at: expect.any(Date),
@@ -357,6 +358,7 @@ describe('Agent Run Database Functions', () => {
         status: 'skipped',
         errorMessage: 'Step failed validation',
         startTime,
+        messageId: null,
       })
 
       expect(mockValues).toHaveBeenCalledWith(
@@ -380,6 +382,7 @@ describe('Agent Run Database Functions', () => {
         stepNumber: 4,
         status: 'running',
         startTime,
+        messageId: null,
       })
 
       expect(mockValues).toHaveBeenCalledWith(
@@ -402,6 +405,7 @@ describe('Agent Run Database Functions', () => {
         stepNumber: 5,
         credits: 0, // Zero credits
         startTime,
+        messageId: null,
       })
 
       expect(mockValues).toHaveBeenCalledWith(
@@ -425,6 +429,7 @@ describe('Agent Run Database Functions', () => {
           agentRunId: 'run-123',
           stepNumber: 6,
           startTime,
+          messageId: null,
         }),
       ).rejects.toThrow('Insert failed')
 
@@ -451,6 +456,7 @@ describe('Agent Run Database Functions', () => {
         stepNumber: 1,
         credits: 123.456789, // High precision number
         startTime: new Date(),
+        messageId: null,
       })
 
       expect(mockValues).toHaveBeenCalledWith(
@@ -472,6 +478,7 @@ describe('Agent Run Database Functions', () => {
         agentRunId: 'run-123',
         stepNumber: 1,
         startTime: specificStartTime,
+        messageId: null,
       })
 
       expect(mockValues).toHaveBeenCalledWith(
